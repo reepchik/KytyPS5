@@ -168,6 +168,59 @@ LIB_DEFINE(InitDialog_1_PlayerInvitationDialog) {
 
 } // namespace LibPlayerInvitationDialog
 
+namespace LibG2PDialog {
+
+LIB_VERSION("CdlgG2P", 1, "CdlgG2P", 1, 1);
+
+constexpr int G2P_DIALOG_STATUS_NONE = 0;
+
+static int KYTY_SYSV_ABI G2PDialogInitialize() {
+	PRINT_NAME();
+
+	return 0;
+}
+
+static int KYTY_SYSV_ABI G2PDialogOpen(const void* /*param*/) {
+	PRINT_NAME();
+
+	return 0;
+}
+
+static int KYTY_SYSV_ABI G2PDialogUpdateStatus() {
+	PRINT_NAME();
+
+	return G2P_DIALOG_STATUS_NONE;
+}
+
+static int KYTY_SYSV_ABI G2PDialogGetResult(void* /*result*/) {
+	PRINT_NAME();
+
+	return 0;
+}
+
+static int KYTY_SYSV_ABI G2PDialogClose() {
+	PRINT_NAME();
+
+	return 0;
+}
+
+static int KYTY_SYSV_ABI G2PDialogTerminate() {
+	PRINT_NAME();
+
+	return 0;
+}
+
+LIB_DEFINE(InitDialog_1_G2PDialog) {
+	LIB_FUNC("SWRH9B4oil8", G2PDialogInitialize);
+	LIB_FUNC("biwS5HG-DBY", G2PDialogOpen);
+	LIB_FUNC("tkRwnzG4Tus", G2PDialogUpdateStatus);
+	LIB_FUNC("vpA-xXvhfeY", G2PDialogGetResult);
+	LIB_FUNC("2pEUrnXGxys", G2PDialogClose);
+	LIB_FUNC("jdhjw0pRmyQ", G2PDialogTerminate);
+}
+
+} // namespace LibG2PDialog
+
 LIB_DEFINE(InitDialog_1) {
 	LibCommonDialog::InitDialog_1_CommonDialog(s);
 	LibImeDialog::InitDialog_1_ImeDialog(s);
@@ -178,6 +231,7 @@ LIB_DEFINE(InitDialog_1) {
 	LibMsgDialog::InitDialog_1_MsgDialog(s);
 	LibErrorDialog::InitDialog_1_ErrorDialog(s);
 	LibPlayerInvitationDialog::InitDialog_1_PlayerInvitationDialog(s);
+	LibG2PDialog::InitDialog_1_G2PDialog(s);
 }
 
 } // namespace Libs
