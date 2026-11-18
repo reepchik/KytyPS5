@@ -1908,6 +1908,36 @@ uint32_t* KYTY_SYSV_ABI AgcCbSetShRegistersDirect(CommandBuffer*                
 	return set_registers_direct(buf, regs, num_regs, Pm4::IT_SET_SH_REG);
 }
 
+// The bytes AgcCbSetShRegistersDirect emits for these registers: a two-dword header per run of
+// consecutive offsets, and one dword per register.
+uint32_t KYTY_SYSV_ABI AgcCbSetShRegistersDirectGetSize(const volatile ShaderRegister* regs,
+                                                        uint32_t                       num_regs) {
+	PRINT_NAME();
+
+	AgcTrace("\t regs     = 0x%016" PRIx64 "\n"
+	         "\t num_regs = %" PRIu32 "\n",
+	         reinterpret_cast<uint64_t>(regs), num_regs);
+
+	if (num_regs == 0) {
+		return 0;
+	}
+
+	EXIT_NOT_IMPLEMENTED(regs == nullptr);
+
+	uint32_t num_runs    = 1;
+	uint32_t prev_offset = regs[0].offset;
+
+	for (uint32_t i = 1; i < num_regs; i++) {
+		const auto offset = regs[i].offset;
+		if (offset != prev_offset + 1u) {
+			num_runs++;
+		}
+		prev_offset = offset;
+	}
+
+	return 4u * (num_regs + 2u * num_runs);
+}
+
 uint32_t* KYTY_SYSV_ABI AgcCbSetUcRegistersDirect(CommandBuffer*                 buf,
                                                   const volatile ShaderRegister* regs,
                                                   uint32_t                       num_regs) {

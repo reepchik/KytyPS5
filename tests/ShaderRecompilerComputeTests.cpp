@@ -55666,6 +55666,27 @@ void CheckPm4IndirectControlFlow(RenderContext &renderer) {
                   cx_packet.data() && cx_dcb.cursor_up == cx_dcb.top,
           "indirect Cx size did not match the emitted command buffer");
 
+  // Three runs of consecutive offsets: a two-dword header each and one dword per register.
+  const std::array<ShaderRegister, 6> sh_registers{
+      {{0x10, 1}, {0x11, 2}, {0x20, 3}, {0x21, 4}, {0x22, 5}, {0x30, 6}}};
+  std::array<uint32_t, 12> sh_packets{};
+  CommandBufferLayout sh_dcb{sh_packets.data(), sh_packets.data() + sh_packets.size(),
+                            sh_packets.data(), sh_packets.data() + sh_packets.size(),
+                            nullptr, nullptr, 0};
+  Require(name, "direct shader register packet size",
+          Gen5::AgcCbSetShRegistersDirectGetSize(sh_registers.data(), 0) == 0 &&
+              Gen5::AgcCbSetShRegistersDirectGetSize(sh_registers.data(), 1) == 12 &&
+              Gen5::AgcCbSetShRegistersDirectGetSize(
+                  sh_registers.data(), sh_registers.size()) == sizeof(sh_packets) &&
+              Gen5::AgcCbSetShRegistersDirect(
+                  reinterpret_cast<Gen5::CommandBuffer *>(&sh_dcb), sh_registers.data(),
+                  sh_registers.size()) == sh_packets.data() &&
+              sh_dcb.cursor_up == sh_dcb.top &&
+              sh_packets[0] == KYTY_PM4(4, Pm4::IT_SET_SH_REG, 0) &&
+              sh_packets[4] == KYTY_PM4(5, Pm4::IT_SET_SH_REG, 0) &&
+              sh_packets[9] == KYTY_PM4(3, Pm4::IT_SET_SH_REG, 0),
+          "direct Sh size did not match the emitted command buffer");
+
   std::array<uint32_t, 14> patched_branch{};
   CommandBufferLayout branch_dcb{
       patched_branch.data(), patched_branch.data() + patched_branch.size(),
